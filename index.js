@@ -103,7 +103,7 @@ module.exports = function(options) {
     console.log(json);
     console.log("> Reconnecting in 120 seconds..");
     stream.destroy();
-    setTimeout(this.connectTwitter, 120000);
+    setTimeout(connectTwitter, 120000);
   });
 
 
