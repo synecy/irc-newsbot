@@ -1,0 +1,30 @@
+{
+  "name": "irc-newsbot",
+  "version": "0.1.0",
+  "description": "Real Time News IRC Bot for connecting Twitter streaming API to IRC, also includes YouTube and Twitter url resolvers as well as Twitch user status feature.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "irc",
+    "bot",
+    "twitter",
+    "real",
+    "time",
+    "twitch",
+    "youtube",
+    "api",
+    "streaming",
+    "news"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "irc": "~0.3.6",
+    "request": "~2.33.0",
+    "user-stream": "~0.0.7",
+    "youtube-feeds": "~2.2.1",
+    "twitter-js-client": "~0.0.5"
+  }
+}
