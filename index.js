@@ -32,7 +32,7 @@ module.exports = function(options) {
 			"accessTokenSecret": options.twitterAccessTokenSecret
 	}
 
-
+  options.ircChannel = (options.ircChannel.charAt(0) == "#" ? options.ircChannel : "#"+options.ircChannel);
  	var client = new irc.Client(options.ircServer, options.ircNick, {
  	   channels: [options.ircChannel],
  	   userName: options.ircNick,
@@ -151,12 +151,17 @@ module.exports = function(options) {
     if (!error && response.statusCode == 200) {
       var json = JSON.parse(body);
       var currentlyInJson = [];
-
-      for ( var i = 0; i < json.streams.length; i++ ) {
+      for (var i=0; i<json.streams.length;i++) {
         currentlyInJson.push(json.streams[i].channel.display_name);
-        var index = currentlyOnline.indexOf(json.streams[i].channel.display_name);
+        var index = -1;
+        for ( var a=0; a < currentlyOnline.length; a++ ) {
+          if ( currentlyOnline[a].name == json.streams[i].channel.display_name ) {
+            index = a;
+            break;
+          }
+        }
         if ( index == -1 ) {
-          currentlyOnline.push(json.streams[i].channel.display_name);
+          currentlyOnline.push({name: json.streams[i].channel.display_name, game: json.streams[i].channel.game});
           if ( !isFirstExecution ) {
             console.log("[Twitch] User " + json.streams[i].channel.display_name + " started streaming " + json.streams[i].channel.game);
             client.say(options.ircChannel, irc.colors.wrap('light_cyan', '[Twitch]') + " User " + json.streams[i].channel.display_name + " started streaming " + json.streams[i].channel.game);
@@ -164,23 +169,55 @@ module.exports = function(options) {
         }
       }
 
-      for ( var i = 0; i < currentlyOnline.length; i++ ) {
-        var index = currentlyInJson.indexOf(currentlyOnline[i]);
+      for (var i=0; i<currentlyOnline.length;i++) {
+        var index = currentlyInJson.indexOf(currentlyOnline[i].name);
         if ( index == -1 ) {
-          console.log("[Twitch] User " + currentlyOnline[i] + " stopped streaming.");
-          client.say(options.ircChannel, irc.colors.wrap('light_cyan', '[Twitch]') + " User " + currentlyOnline[i] + " stopped streaming.");
+          console.log("[Twitch] User " + currentlyOnline[i].name + " stopped streaming.");
+          client.say(options.ircChannel, irc.colors.wrap('light_cyan', '[Twitch]') + " User " + currentlyOnline[i].name + " stopped streaming.");
           currentlyOnline.splice(i, 1);
         }
       }
+
+      for (var i=0; i<json.streams.length;i++) {
+        for (var b=0; b<currentlyOnline.length;b++) {
+          if ( currentlyOnline[b].name == json.streams[i].channel.display_name ) {
+            if ( currentlyOnline[b].game != json.streams[i].channel.game ) {
+              currentlyOnline[b].game = json.streams[i].channel.game;
+              console.log("[Twitch] User " + currentlyOnline[b].name + " is now playing " + json.streams[i].channel.game);
+              client.say(options.ircChannel, irc.colors.wrap('light_cyan', '[Twitch]') + " User " + currentlyOnline[b].name + " is now playing " + json.streams[i].channel.game);
+            }
+          }
+        }
+      }
+
       isFirstExecution = false;
       if ( json.streams.length == 0 ) {
         currentlyInJson = [];
       }
     } else {
-      console.log("[Twitch] Error! Failed to update.");
+      console.log("[Twitch] Error! Failed to update. Stats: " + currentlyOnline.length);
+      client.say(options.ircChannel, irc.colors.wrap('light_cyan', '[Twitch]') + " Error! Failed to update.");
     }
   }
 
+  client.addListener('message'+options.ircChannel, function (from, message) {
+    var messageParts = message.split(/[ ]+/);
+    if ( messageParts[0] == "!twitch" ) {
+      var onlineUsersList = " ";
+      if ( currentlyOnline.length > 0 ) {
+        for (var i=0; i<currentlyOnline.length;i++) {
+          onlineUsersList += currentlyOnline[i].name;
+          onlineUsersList += (" (" + currentlyOnline[i].game + ")");
+          onlineUsersList += ", ";
+        }
+        onlineUsersList = onlineUsersList.substring(0, onlineUsersList.length-2);
+      } else {
+        onlineUsersList += "No followed users online.";
+      }
+      client.say(options.ircChannel, irc.colors.wrap('light_cyan', '[Twitch]') + onlineUsersList);
+      onlineUsersList = "";
+    }
+  });
 
   var updateTwitchFollowed = function() {
     var options = {
