@@ -9,6 +9,12 @@ your choice. Just follow the twitter users you want to stream and unfollow the o
 Additional twitch.tv user status feature provides status updates when a live streamer you are following goes online.
 To get twitch.tv updates, add twitchOauthKey to options and follow the twitch users you wish to receive updates for.
 
+https://www.npmjs.com/package/irc-newsbot
+
+
+## Install
+npm install irc-newsbot
+
 
 ## Usage
 
