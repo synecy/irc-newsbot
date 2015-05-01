@@ -7,7 +7,7 @@ IRC-Newsbot uses twitter streaming API to live stream the content of your twitte
 your choice. Just follow the twitter users you want to stream and unfollow the ones you dont.
 
 Additional twitch.tv user status feature provides status updates when a live streamer you are following goes online.
-To get twitch.tv updates, add twitchOauthKey to options and follow the twitch users you wish to receive updates for.
+To get twitch.tv updates, add twitchOauthKey to options and follow the twitch users you wish to receive updates for. Use !twitch channel command for listing all currently online twitch users.
 
 https://www.npmjs.com/package/irc-newsbot
 
