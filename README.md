@@ -10,8 +10,11 @@ Additional twitch.tv user status feature provides status updates when a live str
 To get twitch.tv updates, add twitchOauthKey to options and follow the twitch users you wish to receive updates for. Use !twitch channel command for listing all currently online twitch users.
 
 YouTube API Key: https://developers.google.com/youtube/registering_an_application
+
 Twitch oauth key: http://www.twitchapps.com/tmi/
+
 Twitter API keys: https://dev.twitter.com/
+
 
 https://www.npmjs.com/package/irc-newsbot
 
