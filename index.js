@@ -3,7 +3,7 @@
 var irc = require('irc');
 var request = require('request');
 var Stream = require('user-stream');
-var youtube = require('youtube-feeds');
+var google = require('googleapis');
 var twitterclient = require("twitter-js-client");
 
 
@@ -40,6 +40,15 @@ module.exports = function(options) {
 	});
 	console.log("> Application IRC connected.");
 
+  var youtube = null;
+  var youtubeKeysSet = false;
+  if ( options.youtubeApiKey.length > 0 ) {
+    google.options ({ auth: options.youtubeApiKey });
+    youtube = google.youtube ('v3');
+    youtubeKeysSet = true;
+  } else {
+     console.log("> Youtube API Key is not set, skipping youtube link resolver.");
+  }
 
 	// Check if twitter key is set and decide whether to enable to disable twitter feed.	
 	if ( twitterKeysSet ) {
@@ -114,32 +123,39 @@ module.exports = function(options) {
 
 	// YouTube URL to Title resolver
 
-  var sendYoutubeDataToIRC = function( err, data ) {
-    if( err instanceof Error ) {
-      console.log( err );
-    } else {
-      if ( data.title != undefined ) {
-        client.say(options.ircChannel, "YouTube: " + data.title + " - Uploader: " + data.uploader + " - Views: " + data.viewCount);
+  function resolveYouTubeUrl(id, callback) {
+    youtube.videos.list({part: 'snippet, statistics', id: id}, function(error, response) {
+      if (error) { 
+        return callback({}); 
       }
-    }
+      response.items.forEach(function(videoInfo) {
+        return callback({title: videoInfo.snippet.title, uploader: videoInfo.snippet.channelTitle, views: videoInfo.statistics.viewCount});
+      });
+    });
   }
 
-
-  var parseVideoID = function( url ) {
+  function parseVideoID( url ) {
     var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
     var match = url.match(regExp);
-    if ( match && match[2].length == 11 ) {
-      youtube.video( match[2] ).details( sendYoutubeDataToIRC );
+    if (match&&match[2].length==11) {
+      resolveYouTubeUrl(match[2], sendYoutubeInfoToIRC);
     }
   }
 
-
-  client.addListener('message'+options.ircChannel, function (from, message) {
-    var messageParts = message.split(/[ ]+/);
-    for ( i = 0; i < messageParts.length; i++ ) {
-      parseVideoID( messageParts[i] );
+  function sendYoutubeInfoToIRC(result) {
+    if ( result.title != undefined ) {
+      client.say(options.ircChannel, "YouTube: " + result.title + " - Uploader: " + result.uploader + " - Views: " + result.views);
     }
-  });
+  }
+
+  if ( youtubeKeysSet ) {
+    client.addListener('message'+options.ircChannel, function (from, message) {
+      var messageParts = message.split(/[ ]+/);
+      for ( i = 0; i < messageParts.length; i++ ) {
+        parseVideoID( messageParts[i] );
+      }
+    });
+  }
 
 
 	// Twitch user online status following

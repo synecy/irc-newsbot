@@ -9,12 +9,14 @@ your choice. Just follow the twitter users you want to stream and unfollow the o
 Additional twitch.tv user status feature provides status updates when a live streamer you are following goes online.
 To get twitch.tv updates, add twitchOauthKey to options and follow the twitch users you wish to receive updates for. Use !twitch channel command for listing all currently online twitch users.
 
-https://www.npmjs.com/package/irc-newsbot
+YouTube API Key: https://developers.google.com/youtube/registering_an_application
+Twitch oauth key: http://www.twitchapps.com/tmi/
+Twitter API keys: https://dev.twitter.com/
 
+https://www.npmjs.com/package/irc-newsbot
 
 ## Install
 npm install irc-newsbot
-
 
 ## Usage
 
@@ -24,12 +26,13 @@ Simple example for setting up the bot and connecting to a channel.
 var newsbot = require('irc-newsbot');
 
 // Set options for the bot.
-// Leaving twitch or twitter key fields empty will simply disable those features of the bot.
+// Leaving youtube, twitch or twitter key fields empty will simply disable those features of the bot.
 // Highlights and Blacklists can also be left empty []
 var options = {
   ircServer: 'irc.freenode.net',
   ircChannel: '#channel',
   ircNick: 'NewsBot',
+  youtubeApiKey: 'abcdefghij_klmn_1234abcdefghij',
   twitchOauthKey: 'abc123456789',
   twitterConsumerKey: 'abc123456789',
   twitterConsumerSecret: 'abc123456789',
