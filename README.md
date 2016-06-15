@@ -11,7 +11,10 @@ To get twitch.tv updates, add twitchOauthKey to options and follow the twitch us
 
 YouTube API Key: https://developers.google.com/youtube/registering_an_application
 
-Twitch oauth key: http://www.twitchapps.com/tmi/
+Twitch oauth key: http://www.twitchapps.com/tmi/ (May have to register new application at https://www.twitch.tv/settings/connections instead)
+
+Twitch Client-ID: https://www.twitch.tv/settings/connections (Register application -> Edit) see: https://blog.twitch.tv/client-id-required-for-kraken-api-calls-afbb8e95f843#.sf30zyrts
+
 
 Twitter API keys: https://dev.twitter.com/
 
@@ -39,6 +42,7 @@ var options = {
   ircNickServPassword: 'abcdefg', // Remove this line if you dont need to auth via NickServ
   youtubeApiKey: 'abcdefghij_klmn_1234abcdefghij',
   twitchOauthKey: 'abc123456789',
+  twitchClientId: 'abcdefg123',
   twitterConsumerKey: 'abc123456789',
   twitterConsumerSecret: 'abc123456789',
   twitterAccessTokenKey: 'abc123456789',

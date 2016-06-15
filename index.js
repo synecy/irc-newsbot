@@ -19,6 +19,7 @@ module.exports = function(options) {
   var tweetBlacklistedWords = options.twitterWordBlacklist;
   var highlightedTwitterUsers = options.twitterUserHighlight;
   var twitchOauthKey = options.twitchOauthKey;
+  var twitchClientId = options.twitchClientId;
   var stream = new Stream({
       consumer_key: options.twitterConsumerKey,
       consumer_secret: options.twitterConsumerSecret,
@@ -248,6 +249,7 @@ module.exports = function(options) {
       headers: {
         'Accept': 'application/vnd.twitchtv.v2+json',
         'Authorization': 'OAuth ' + twitchOauthKey,
+        'Client-ID': twitchClientId
       }
     };
     request.get(options, twitchCallback);
