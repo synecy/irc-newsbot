@@ -35,6 +35,8 @@ var options = {
   ircServer: 'irc.freenode.net',
   ircChannel: '#channel',
   ircNick: 'NewsBot',
+  ircPort: 6667,
+  ircNickServPassword: 'abcdefg', // Remove this line if you dont need to auth via NickServ
   youtubeApiKey: 'abcdefghij_klmn_1234abcdefghij',
   twitchOauthKey: 'abc123456789',
   twitterConsumerKey: 'abc123456789',
