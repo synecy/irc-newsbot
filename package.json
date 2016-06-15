@@ -1,6 +1,6 @@
 {
   "name": "irc-newsbot",
-  "version": "0.2.5",
+  "version": "0.2.8",
   "description": "Real Time News IRC Bot for connecting Twitter streaming API to IRC.",
   "repository": {
     "type": "git",

@@ -48,6 +48,12 @@ module.exports = function(options) {
     }
   });
 
+  client.addListener('notice', function (nick, to, text, message) {
+    if (nick == 'NickServ') {
+      console.log("> NickServ: " + text);
+    }
+  });
+
   var youtube = null;
   var youtubeKeysSet = false;
   if ( options.youtubeApiKey.length > 0 ) {
