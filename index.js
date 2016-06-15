@@ -9,12 +9,12 @@ var twitterclient = require("twitter-js-client");
 
 module.exports = function(options) { 
 
-	var twitterKeysSet = false;
-	if ( (options.twitterConsumerKey.length > 0) && (options.twitterConsumerSecret.length > 0) ) {
-		if ( (options.twitterAccessTokenKey.length > 0) && (options.twitterAccessTokenSecret.length > 0) ) {
-			twitterKeysSet = true;
-		}
-	}
+  var twitterKeysSet = false;
+  if ( (options.twitterConsumerKey.length > 0) && (options.twitterConsumerSecret.length > 0) ) {
+    if ( (options.twitterAccessTokenKey.length > 0) && (options.twitterAccessTokenSecret.length > 0) ) {
+      twitterKeysSet = true;
+    }
+  }
 
   var tweetBlacklistedWords = options.twitterWordBlacklist;
   var highlightedTwitterUsers = options.twitterUserHighlight;
@@ -25,40 +25,47 @@ module.exports = function(options) {
       access_token_key: options.twitterAccessTokenKey,
       access_token_secret: options.twitterAccessTokenSecret
   });
-	var twitterConfig = {
-  	  "consumerKey": options.twitterConsumerKey,
-			"consumerSecret": options.twitterConsumerSecret,
-  	  "accessToken": options.twitterAccessTokenKey,
-			"accessTokenSecret": options.twitterAccessTokenSecret
-	}
+  var twitterConfig = {
+      "consumerKey": options.twitterConsumerKey,
+      "consumerSecret": options.twitterConsumerSecret,
+      "accessToken": options.twitterAccessTokenKey,
+      "accessTokenSecret": options.twitterAccessTokenSecret
+  }
 
   options.ircChannel = (options.ircChannel.charAt(0) == "#" ? options.ircChannel : "#"+options.ircChannel);
- 	var client = new irc.Client(options.ircServer, options.ircNick, {
- 	   channels: [options.ircChannel],
- 	   userName: options.ircNick,
- 	   realName: options.ircNick,
-	});
-	console.log("> Application IRC connected.");
+  var client = new irc.Client(options.ircServer, options.ircNick, {
+     channels: [options.ircChannel],
+     userName: options.ircNick,
+     realName: options.ircNick,
+     port: options.ircPort,
+  });
+  console.log("> Application IRC connected.");
+
+  client.addListener('motd', function(message) {
+    if (options.ircNickServPassword != undefined) {
+      client.say('NickServ', "IDENTIFY " + options.ircNickServPassword);
+    }
+  });
 
   var youtube = null;
   var youtubeKeysSet = false;
   if ( options.youtubeApiKey.length > 0 ) {
     google.options ({ auth: options.youtubeApiKey });
-    youtube = google.youtube ('v3');
+    youtube = google.youtube('v3');
     youtubeKeysSet = true;
   } else {
      console.log("> Youtube API Key is not set, skipping youtube link resolver.");
   }
 
-	// Check if twitter key is set and decide whether to enable to disable twitter feed.	
-	if ( twitterKeysSet ) {
-  	var connectTwitter = function() {
-    	stream.stream();
-  	}
-		connectTwitter();
-	} else {
-		console.log("> Twitter keys are not properly set, skipping twitter streaming feed.");
-	}
+  // Check if twitter key is set and decide whether to enable to disable twitter feed.  
+  if ( twitterKeysSet ) {
+    var connectTwitter = function() {
+      stream.stream();
+    }
+    connectTwitter();
+  } else {
+    console.log("> Twitter keys are not properly set, skipping twitter streaming feed.");
+  }
 
 
   var containsFilteredWord = function( strPost ) {
@@ -121,7 +128,7 @@ module.exports = function(options) {
   });
 
 
-	// YouTube URL to Title resolver
+  // YouTube URL to Title resolver
 
   function resolveYouTubeUrl(id, callback) {
     youtube.videos.list({part: 'snippet, statistics', id: id}, function(error, response) {
@@ -158,7 +165,7 @@ module.exports = function(options) {
   }
 
 
-	// Twitch user online status following
+  // Twitch user online status following
 
   var currentlyOnline = [];
   var isFirstExecution = true;
@@ -246,28 +253,28 @@ module.exports = function(options) {
     request.get(options, twitchCallback);
   }
 
-	
- 	if ( twitchOauthKey.length > 0 ) {
-   	console.log("> Application Twitch updates started.");
-   	setInterval(updateTwitchFollowed, 240000);
- 	} else {
-		console.log("> Twitch oauth key not set, skipping twitch updates..");
-	}
+  
+  if ( twitchOauthKey.length > 0 ) {
+    console.log("> Application Twitch updates started.");
+    setInterval(updateTwitchFollowed, 240000);
+  } else {
+    console.log("> Twitch oauth key not set, skipping twitch updates..");
+  }
 
 
-	// Tweet link to content resolver
+  // Tweet link to content resolver
 
-	// Enable and distable Tweet resolving depending on whether twitter keys are properly set.
-	if ( twitterKeysSet ) {
-		var twitter = new twitterclient.Twitter(twitterConfig);
+  // Enable and distable Tweet resolving depending on whether twitter keys are properly set.
+  if ( twitterKeysSet ) {
+    var twitter = new twitterclient.Twitter(twitterConfig);
   } else {
     console.log("> Twitter keys are not properly set, skipping tweet url to content resolver.");
   }
 
-	var twitterError = function(err, response, body) {
-		console.log("> TwitterClient error: ");
+  var twitterError = function(err, response, body) {
+    console.log("> TwitterClient error: ");
     console.log(err);
-	};
+  };
 
 
   var getTweetSuccess = function(data) {
@@ -283,9 +290,9 @@ module.exports = function(options) {
     var regExp = /(twitter.com\/([^\/]*)\/status\/(\d+))/;
     var match = url.match(regExp);
     if ( match && match[3].length > 10 ) {
-			if ( twitter ) {
-      	twitter.getTweet({ id: match[3]}, twitterError, getTweetSuccess);
-			}
+      if ( twitter ) {
+        twitter.getTweet({ id: match[3]}, twitterError, getTweetSuccess);
+      }
     }
   }
 
@@ -296,7 +303,7 @@ module.exports = function(options) {
       parseTweetID( messageParts[i] );
     }
   });
-	
+  
 }
 
 
